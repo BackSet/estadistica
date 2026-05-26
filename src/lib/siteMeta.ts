@@ -18,7 +18,9 @@ export const SITE = {
     'ejercicios resueltos',
   ],
   author: 'Estadística descriptiva',
-  ogImagePath: '/og-image.svg',
+  ogImagePath: '/og-image.png',
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
   twitterHandle: '',
 } as const
 
@@ -184,6 +186,42 @@ export function applyPageMeta(meta: PageMeta = {}): void {
       return m
     },
     image,
+  )
+  upsertMeta(
+    'meta[property="og:image:secure_url"]',
+    () => {
+      const m = document.createElement('meta')
+      m.setAttribute('property', 'og:image:secure_url')
+      return m
+    },
+    image,
+  )
+  upsertMeta(
+    'meta[property="og:image:type"]',
+    () => {
+      const m = document.createElement('meta')
+      m.setAttribute('property', 'og:image:type')
+      return m
+    },
+    'image/png',
+  )
+  upsertMeta(
+    'meta[property="og:image:width"]',
+    () => {
+      const m = document.createElement('meta')
+      m.setAttribute('property', 'og:image:width')
+      return m
+    },
+    String(SITE.ogImageWidth),
+  )
+  upsertMeta(
+    'meta[property="og:image:height"]',
+    () => {
+      const m = document.createElement('meta')
+      m.setAttribute('property', 'og:image:height')
+      return m
+    },
+    String(SITE.ogImageHeight),
   )
   upsertMeta(
     'meta[property="og:locale"]',

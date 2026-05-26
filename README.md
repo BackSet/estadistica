@@ -51,7 +51,7 @@ Al final de cada página, **Exportar esta página** genera un PDF en **A4** con 
 ## SEO y compartir en redes
 
 - **Favicon** en `public/favicon.svg` (gráfico de barras, color terracota).
-- **Vista previa al compartir** (`og:image`, Twitter Card): `public/og-image.svg`.
+- **Vista previa al compartir** (`og:image`, WhatsApp, Telegram): `public/og-image.png` (1200×630; WhatsApp no admite SVG).
 - Cada ruta actualiza título, descripción, Open Graph y URL canónica vía `usePageMeta`.
 - `public/robots.txt` y `public/sitemap.xml` para buscadores.
 
@@ -73,7 +73,9 @@ El proyecto incluye `Dockerfile`, `railway.toml` y nginx para servir el build es
 | `PORT` | Runtime | La asigna Railway automáticamente; nginx escucha en ese puerto. |
 | `VITE_SITE_URL` | **Build** | URL pública del sitio (p. ej. `https://tu-app.up.railway.app`) para canonical y vista previa al compartir. |
 
-Marca `VITE_SITE_URL` como variable de **build** en el servicio (Settings → Variables → agregar en Build).
+Marca `VITE_SITE_URL` como variable de **build** en el servicio (p. ej. `https://estadistica.bymerge.org`). Sin URL absoluta, WhatsApp muestra la miniatura en blanco.
+
+Tras desplegar, si el enlace ya se compartió antes, refresca la caché en [Facebook Sharing Debugger](https://developers.facebook.com/tools/debug/) (también afecta a WhatsApp).
 
 ### CLI
 
