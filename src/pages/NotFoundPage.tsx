@@ -1,20 +1,21 @@
 import { Link } from 'react-router-dom'
+import { Button } from '@/components/ui/button'
+import { AppShell } from '@/components/layout/AppShell'
 
 export function NotFoundPage() {
   return (
-    <div className="app-shell">
-      <nav className="app-nav no-print" aria-label="Navegación principal">
-        <Link to="/" className="app-nav-link">
-          ← Inicio
-        </Link>
-      </nav>
-      <div className="not-found">
-        <h1>Página no encontrada</h1>
-        <p>La ruta solicitada no existe en esta aplicación.</p>
-        <Link to="/" className="not-found-link">
-          Volver al inicio
-        </Link>
+    <AppShell>
+      <div className="py-12 text-center">
+        <h1 className="font-display mb-2 text-2xl font-semibold">
+          Página no encontrada
+        </h1>
+        <p className="mb-6 text-muted-foreground">
+          La ruta solicitada no existe en esta aplicación.
+        </p>
+        <Button variant="outline" nativeButton={false} render={<Link to="/" />}>
+          Ir al inicio
+        </Button>
       </div>
-    </div>
+    </AppShell>
   )
 }

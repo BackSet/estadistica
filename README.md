@@ -1,73 +1,56 @@
-# React + TypeScript + Vite
+# Estadística descriptiva — Trabajo social
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación web con ejercicios resueltos paso a paso: tablas de frecuencias, datos agrupados y medidas de tendencia central. Cada ejercicio tiene su propia URL.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 + TypeScript + Vite
+- React Router
+- Tailwind CSS v4
+- [shadcn/ui](https://ui.shadcn.com) (componentes en `src/components/ui`)
 
-## React Compiler
+## Desarrollo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Abre la URL que muestra Vite (por defecto `http://localhost:5173`).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Rutas
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| Ruta | Contenido |
+|------|-----------|
+| `/` | Índice de ejercicios |
+| `/ejercicio/:id` | Ejercicio individual (p. ej. `/ejercicio/freq-1`) |
+
+## Estructura del código
+
+```
+src/
+  data/exercises.ts       # Definición de ejercicios y datos
+  lib/statistics/         # Cálculos y pasos de resolución (con leyendas)
+  components/
+    resolution/           # FormulaBlock, ResolutionFlow
+    layout/               # AppShell, ExerciseLayout
+    ui/                   # Componentes shadcn
+  pages/                  # Home, ejercicio, 404
+```
+
+La lógica numérica vive en `src/lib/statistics/`; los componentes solo presentan los resultados.
+
+## Tema (claro / oscuro / sistema)
+
+En la cabecera de cada página, el botón de apariencia permite elegir **Claro**, **Oscuro** o **Sistema** (sigue la preferencia del dispositivo). La elección se guarda en el navegador.
+
+## PDF
+
+Al final de cada página, **Exportar esta página** genera un PDF en formato **A4** con márgenes y varias páginas si el contenido es largo. La captura usa tema claro para mejor impresión y excluye la barra de navegación y el pie de exportación.
+
+## Build
+
+```bash
+npm run build
+npm run preview
 ```

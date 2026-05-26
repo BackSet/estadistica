@@ -1,79 +1,107 @@
 import { Link } from 'react-router-dom'
-import { DownloadPdfToolbar } from '../components/DownloadPdfToolbar'
+import { Badge } from '@/components/ui/badge'
 import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { AppShell } from '@/components/layout/AppShell'
+import {
+  exerciseKindLabel,
   exercisePath,
   exercises,
   type ExerciseDef,
-} from '../data/exercises'
-
-function exerciseKindLabel(ex: ExerciseDef): string {
-  return ex.kind === 'frequency' ? 'Tabla de frecuencias' : 'Tendencia central'
-}
+} from '@/data/exercises'
+import { cn } from '@/lib/utils'
 
 function ExerciseCard({ ex }: { ex: ExerciseDef }) {
   const to = exercisePath(ex.id)
   return (
-    <Link to={to} className="home-exercise-card">
-      <span className="home-exercise-card-badge">{ex.exerciseLabel}</span>
-      <span className="home-exercise-card-kind">{exerciseKindLabel(ex)}</span>
-      <span className="home-exercise-card-title">{ex.title}</span>
-      <span className="home-exercise-card-cta">Abrir ejercicio →</span>
+    <Link
+      to={to}
+      className={cn(
+        'block rounded-xl no-underline outline-none',
+        'focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+      )}
+    >
+      <Card className="h-full transition-colors hover:border-primary/40 hover:shadow-sm">
+        <CardHeader>
+          <div className="mb-2 flex flex-wrap gap-2">
+            <Badge variant="secondary">{ex.exerciseLabel}</Badge>
+            <Badge variant="outline">{exerciseKindLabel(ex)}</Badge>
+          </div>
+          <CardTitle className="text-base leading-snug">{ex.title}</CardTitle>
+          <CardDescription>Abrir ejercicio →</CardDescription>
+        </CardHeader>
+      </Card>
     </Link>
+  )
+}
+
+function ExerciseSection({
+  id,
+  title,
+  description,
+  items,
+}: {
+  id: string
+  title: string
+  description: string
+  items: ExerciseDef[]
+}) {
+  return (
+    <section aria-labelledby={id}>
+      <h2 id={id} className="font-display mb-2 text-xl font-semibold">
+        {title}
+      </h2>
+      <p className="mb-4 text-sm text-muted-foreground">{description}</p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {items.map((ex) => (
+          <ExerciseCard key={ex.id} ex={ex} />
+        ))}
+      </div>
+    </section>
   )
 }
 
 export function HomePage() {
   const frequency = exercises.filter((e) => e.kind === 'frequency')
+  const grouped = exercises.filter((e) => e.kind === 'grouped')
   const central = exercises.filter((e) => e.kind === 'central')
 
   return (
-    <div className="app-shell">
-      <div className="home-pdf-row no-print">
-        <DownloadPdfToolbar scope="home" />
-      </div>
-      <header className="app-header home-header">
-        <h1>Estadística descriptiva para trabajo social</h1>
-        <p className="home-intro">
-          Ejemplos con datos que pueden surgir en la práctica profesional
-          (visitas, encuestas, tiempos de servicio, escalas y fichas de hogar).
-          Cada ejercicio tiene su propia ruta para compartir o guardar el
-          enlace.
+    <AppShell pdfScope="home">
+      <div className="mb-10 space-y-2">
+        <h1 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl">
+          Índice de ejercicios
+        </h1>
+        <p className="max-w-lg text-sm text-muted-foreground leading-relaxed">
+          Ejemplos con datos de práctica profesional. Cada ejercicio tiene su
+          propia URL para compartir o guardar.
         </p>
-      </header>
+      </div>
 
-      <main className="app-main home-main">
-        <section className="home-section" aria-labelledby="home-freq-heading">
-          <h2 id="home-freq-heading" className="home-section-title">
-            Tablas de frecuencias
-          </h2>
-          <p className="home-section-desc">
-            A partir de registros de campo o fichas (horas de intervención,
-            composición del hogar, etc.): frecuencia absoluta, relativa,
-            porcentual y acumulada, con gráfico.
-          </p>
-          <div className="home-exercise-grid">
-            {frequency.map((ex) => (
-              <ExerciseCard key={ex.id} ex={ex} />
-            ))}
-          </div>
-        </section>
-
-        <section className="home-section" aria-labelledby="home-central-heading">
-          <h2 id="home-central-heading" className="home-section-title">
-            Media, mediana y moda
-          </h2>
-          <p className="home-section-desc">
-            Datos no agrupados tomados de evaluaciones, encuestas o indicadores
-            de servicio; en un caso se desarrolla paso a paso la mediana con
-            número par de observaciones.
-          </p>
-          <div className="home-exercise-grid">
-            {central.map((ex) => (
-              <ExerciseCard key={ex.id} ex={ex} />
-            ))}
-          </div>
-        </section>
-      </main>
-    </div>
+      <div className="space-y-10">
+        <ExerciseSection
+          id="home-freq"
+          title="Tablas de frecuencias"
+          description="Datos no agrupados: frecuencia absoluta, relativa, porcentual y acumulada."
+          items={frequency}
+        />
+        <ExerciseSection
+          id="home-grouped"
+          title="Datos agrupados"
+          description="Intervalos, tabla de frecuencias y media con marcas de clase."
+          items={grouped}
+        />
+        <ExerciseSection
+          id="home-central"
+          title="Media, mediana y moda"
+          description="Tendencia central en datos no agrupados; guía ampliada para mediana con n par."
+          items={central}
+        />
+      </div>
+    </AppShell>
   )
 }

@@ -1,7 +1,8 @@
-import type { FrequencyRow } from '../lib/statistics'
+import { cn } from '@/lib/utils'
+import type { FrequencyRow } from '@/lib/statistics'
 
 type Props = {
-  rows: FrequencyRow[]
+  rows: Pick<FrequencyRow, 'xi' | 'fi'>[]
   barLabelFormatter?: (xi: number) => string
   describedById?: string
 }
@@ -36,12 +37,17 @@ export function BarChart({ rows, barLabelFormatter, describedById }: Props) {
   const scaleY = (fi: number) => (fi / yMax) * innerH
 
   return (
-    <div className="chart-container">
+    <div
+      className={cn(
+        'rounded-xl border bg-card p-4',
+        'print:break-inside-avoid',
+      )}
+    >
       <svg
-        className="chart-svg"
+        className="mx-auto block h-auto w-full max-w-full"
         viewBox={`0 0 ${VB_W} ${VB_H}`}
         role="img"
-        aria-label="Gráfico de barras de frecuencias absolutas por categoría"
+        aria-label="Gráfico de barras de frecuencias absolutas"
         {...(describedById ? { 'aria-describedby': describedById } : {})}
       >
         {yTicks.map((tick) => {
@@ -49,7 +55,8 @@ export function BarChart({ rows, barLabelFormatter, describedById }: Props) {
           return (
             <line
               key={`g-${tick}`}
-              className="chart-grid"
+              className="stroke-border"
+              strokeDasharray="4 4"
               x1={PAD.l}
               y1={y}
               x2={VB_W - PAD.r}
@@ -59,14 +66,16 @@ export function BarChart({ rows, barLabelFormatter, describedById }: Props) {
         })}
 
         <line
-          className="chart-axis"
+          className="stroke-foreground/40"
+          strokeWidth={1}
           x1={PAD.l}
           y1={yBase}
           x2={VB_W - PAD.r}
           y2={yBase}
         />
         <line
-          className="chart-axis"
+          className="stroke-foreground/40"
+          strokeWidth={1}
           x1={PAD.l}
           y1={PAD.t}
           x2={PAD.l}
@@ -78,7 +87,7 @@ export function BarChart({ rows, barLabelFormatter, describedById }: Props) {
           return (
             <text
               key={`yt-${tick}`}
-              className="chart-tick-label"
+              className="fill-muted-foreground text-[11px]"
               x={PAD.l - 8}
               y={y}
               textAnchor="end"
@@ -100,7 +109,7 @@ export function BarChart({ rows, barLabelFormatter, describedById }: Props) {
           return (
             <g key={row.xi}>
               <rect
-                className="chart-bar"
+                className="fill-primary"
                 x={x}
                 y={y}
                 width={barW}
@@ -110,7 +119,7 @@ export function BarChart({ rows, barLabelFormatter, describedById }: Props) {
               />
               {row.fi > 0 ? (
                 <text
-                  className="chart-value-label"
+                  className="fill-foreground text-[11px] font-medium"
                   x={x + barW / 2}
                   y={y - 6}
                   textAnchor="middle"
@@ -119,7 +128,7 @@ export function BarChart({ rows, barLabelFormatter, describedById }: Props) {
                 </text>
               ) : null}
               <text
-                className="chart-x-label"
+                className="fill-muted-foreground text-[10px]"
                 x={x + barW / 2}
                 y={VB_H - 18}
                 textAnchor="middle"
