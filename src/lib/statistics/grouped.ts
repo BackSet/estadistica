@@ -141,7 +141,7 @@ export function buildGroupedAnalysis(
     {
       step: 4,
       title: 'Construcción de intervalos',
-      formula: `Desde Mín = ${min}, cada clase abarca C = ${amplitude} → ${intervals.map((i) => i.label).join(', ')}`,
+      formula: `Desde Mín = ${min}, cada clase abarca C = ${amplitude} →\n${intervals.map((i) => i.label).join(', ')}`,
       legends: [
         {
           term: 'Límite superior',

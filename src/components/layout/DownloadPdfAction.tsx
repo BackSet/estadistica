@@ -19,15 +19,14 @@ export function DownloadPdfAction(props: Props) {
     setLoading(true)
     try {
       if (props.scope === 'home') {
-        await downloadAppShellPdf(
-          'estadistica-inicio.pdf',
-          'Estadística descriptiva — Índice de ejercicios',
-        )
+        await downloadAppShellPdf('estadistica-inicio.pdf', {
+          title: 'Estadística descriptiva — Índice de ejercicios',
+        })
       } else {
-        await downloadAppShellPdf(
-          defaultFilename(props.exercise),
-          props.exercise.title,
-        )
+        await downloadAppShellPdf(defaultFilename(props.exercise), {
+          title: props.exercise.title,
+          exercise: props.exercise,
+        })
       }
     } catch (e) {
       console.error(e)

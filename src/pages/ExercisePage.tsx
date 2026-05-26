@@ -5,10 +5,21 @@ import { FrequencyExercise } from '@/components/FrequencyExercise'
 import { GroupedDataExercise } from '@/components/GroupedDataExercise'
 import { AppShell } from '@/components/layout/AppShell'
 import { getExerciseById } from '@/data/exercises'
+import { usePageMeta } from '@/hooks/usePageMeta'
+import {
+  exercisePageMeta,
+  NOT_FOUND_PAGE_META,
+} from '@/lib/siteMeta'
 
 export function ExercisePage() {
   const { id } = useParams<{ id: string }>()
   const exercise = id ? getExerciseById(id) : undefined
+
+  usePageMeta(
+    exercise
+      ? exercisePageMeta(exercise)
+      : { ...NOT_FOUND_PAGE_META, path: id ? `/ejercicio/${id}` : undefined },
+  )
 
   if (!exercise) {
     return (

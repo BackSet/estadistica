@@ -19,8 +19,8 @@ export function PageFooter(props: Props) {
         <CardHeader className="gap-0.5 pb-2">
           <CardTitle className="text-sm">Exportar esta página</CardTitle>
           <CardDescription className="text-xs leading-snug">
-            PDF en formato A4, varias páginas si hace falta, con buena
-            legibilidad (tema claro en el archivo).
+            PDF en A4 con diseño propio: texto seleccionable, tablas y pasos de
+            resolución (no es una captura de pantalla).
           </CardDescription>
         </CardHeader>
         <CardContent className="pt-0">

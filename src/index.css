@@ -103,16 +103,6 @@
   }
 }
 
-/* Preparación de captura para PDF (tema claro forzado en JS) */
-body.is-exporting-pdf .no-print {
-  display: none !important;
-}
-
-body.is-exporting-pdf .pdf-capture-target header {
-  position: relative !important;
-  top: auto !important;
-}
-
 @media print {
   .no-print {
     display: none !important;

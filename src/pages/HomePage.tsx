@@ -13,7 +13,15 @@ import {
   exercises,
   type ExerciseDef,
 } from '@/data/exercises'
+import { usePageMeta } from '@/hooks/usePageMeta'
+import { HOME_PAGE_META } from '@/lib/siteMeta'
 import { cn } from '@/lib/utils'
+
+export function HomePage() {
+  usePageMeta(HOME_PAGE_META)
+
+  return <HomePageContent />
+}
 
 function ExerciseCard({ ex }: { ex: ExerciseDef }) {
   const to = exercisePath(ex.id)
@@ -65,7 +73,7 @@ function ExerciseSection({
   )
 }
 
-export function HomePage() {
+function HomePageContent() {
   const frequency = exercises.filter((e) => e.kind === 'frequency')
   const grouped = exercises.filter((e) => e.kind === 'grouped')
   const central = exercises.filter((e) => e.kind === 'central')
