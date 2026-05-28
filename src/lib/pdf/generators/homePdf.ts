@@ -1,12 +1,18 @@
 import { exercises, exerciseKindLabel, type ExerciseDef } from '@/data/exercises'
 import { PdfDocument } from '../document/PdfDocument'
 
-const KIND_ORDER: ExerciseDef['kind'][] = ['frequency', 'grouped', 'central']
+const KIND_ORDER: ExerciseDef['kind'][] = [
+  'frequency',
+  'grouped',
+  'central',
+  'conceptual',
+]
 
 const KIND_SECTION_TITLE: Record<ExerciseDef['kind'], string> = {
   frequency: 'Tablas de frecuencias',
   grouped: 'Datos agrupados',
   central: 'Tendencia central',
+  conceptual: 'Diagramas conceptuales',
 }
 
 export function generateHomePdf(): PdfDocument {

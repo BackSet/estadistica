@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { CentralTendencyExercise } from '@/components/CentralTendencyExercise'
+import { DiagnosticDiagramExercise } from '@/components/DiagnosticDiagramExercise'
 import { FrequencyExercise } from '@/components/FrequencyExercise'
 import { GroupedDataExercise } from '@/components/GroupedDataExercise'
 import { AppShell } from '@/components/layout/AppShell'
@@ -50,6 +51,8 @@ export function ExercisePage() {
         <FrequencyExercise exercise={exercise} />
       ) : exercise.kind === 'grouped' ? (
         <GroupedDataExercise exercise={exercise} />
+      ) : exercise.kind === 'conceptual' ? (
+        <DiagnosticDiagramExercise exercise={exercise} />
       ) : (
         <CentralTendencyExercise exercise={exercise} />
       )}

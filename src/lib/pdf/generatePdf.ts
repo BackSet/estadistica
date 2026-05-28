@@ -1,5 +1,6 @@
 import type { ExerciseDef } from '@/data/exercises'
 import { generateCentralPdf } from './generators/centralPdf'
+import { generateConceptualPdf } from './generators/conceptualPdf'
 import { generateFrequencyPdf } from './generators/frequencyPdf'
 import { generateGroupedPdf } from './generators/groupedPdf'
 import { generateHomePdf } from './generators/homePdf'
@@ -24,6 +25,9 @@ export function generatePdf(target: GeneratePdfTarget, filename: string): void {
           return
         case 'grouped':
           generateGroupedPdf(exercise).save(filename)
+          return
+        case 'conceptual':
+          generateConceptualPdf(exercise).save(filename)
           return
       }
     }

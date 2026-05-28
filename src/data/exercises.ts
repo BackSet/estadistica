@@ -43,10 +43,30 @@ export type GroupedExerciseDef = {
   chartTitle: string
 }
 
+export type ConceptNodeDef = {
+  id: 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | 'P6' | 'P7'
+  label: string
+  concept: string
+}
+
+export type ConceptualExerciseDef = {
+  kind: 'conceptual'
+  id: string
+  exerciseLabel: string
+  title: string
+  context: string
+  diagramTitle: string
+  nodes: ConceptNodeDef[]
+  summary: string
+  similarities: string[]
+  differences: string[]
+}
+
 export type ExerciseDef =
   | FrequencyExerciseDef
   | CentralExerciseDef
   | GroupedExerciseDef
+  | ConceptualExerciseDef
 
 export const exercises: ExerciseDef[] = [
   {
@@ -157,6 +177,71 @@ export const exercises: ExerciseDef[] = [
     context: 'Indicador de acceso oportuno al servicio (datos no agrupados).',
     note: 'La mediana resume el “día típico” de espera sin que un solo caso extremo domine el resumen.',
   },
+  {
+    kind: 'conceptual',
+    id: 'conceptual-d1-diagnostico-clinico',
+    exerciseLabel: 'D1',
+    title: 'Mentefacto diferencial — Diagnóstico clínico (DSM IV vs CIE 10)',
+    context:
+      'Comparación conceptual entre los dos sistemas de clasificación más usados históricamente en psicopatología clínica.',
+    diagramTitle: 'Diagnóstico clínico',
+    nodes: [
+      {
+        id: 'P1',
+        label: 'Diagnóstico clínico',
+        concept:
+          'Es el proceso fundamental en la psicopatología y la clínica que permite identificar, clasificar y nombrar un cuadro clínico a partir de la observación de signos y síntomas. Actúa como una herramienta esencial para establecer un lenguaje común entre profesionales y guiar el plan de tratamiento.',
+      },
+      {
+        id: 'P2',
+        label: 'DSM IV',
+        concept:
+          'Hace referencia al Manual Diagnóstico y Estadístico de los Trastornos Mentales (4ta edición). Es un sistema de clasificación categorial estandarizado enfocado exclusiva y exhaustivamente en los trastornos de la salud mental.',
+      },
+      {
+        id: 'P3',
+        label: 'APA',
+        concept:
+          'Es la institución estadounidense creadora y editora del DSM. Al ser elaborada por una asociación profesional de psiquiatría, este manual tiene una fuerte influencia de la práctica clínica y la investigación psiquiátrica de Norteamérica.',
+      },
+      {
+        id: 'P4',
+        label: 'Multiaxial',
+        concept:
+          'Es el enfoque de evaluación característico del DSM IV (luego eliminado en DSM 5). Consiste en evaluar al paciente en cinco ejes distintos (I. Trastornos clínicos, II. Trastornos de personalidad/retraso mental, III. Enfermedades médicas, IV. Problemas psicosociales, V. Evaluación global de la actividad), permitiendo una visión estructurada del individuo.',
+      },
+      {
+        id: 'P5',
+        label: 'CIE 10',
+        concept:
+          'Es la Clasificación Internacional de Enfermedades (10ma revisión). Es el estándar global para el reporte de enfermedades y condiciones de salud, en la cual los trastornos mentales y del comportamiento ocupan una sección específica (Capítulo V o letra F).',
+      },
+      {
+        id: 'P6',
+        label: 'OMS',
+        concept:
+          'Es la agencia de la Organización de las Naciones Unidas responsable de la creación y publicación de la CIE. Le otorga a este manual un carácter oficial, global y un enfoque orientado a la salud pública y la recolección de estadísticas epidemiológicas a nivel mundial.',
+      },
+      {
+        id: 'P7',
+        label: 'General / Integral',
+        concept:
+          'A diferencia del DSM, la CIE abarca todo el espectro de las enfermedades médicas (físicas y mentales). Esto sitúa a la psicopatología dentro de un marco médico integral de salud, relacionando los trastornos mentales con el resto del funcionamiento orgánico.',
+      },
+    ],
+    summary:
+      'Este trabajo expone al diagnóstico clínico como la supra-clase o el fin último de la evaluación en psicopatología. Para llegar a este diagnóstico, los profesionales de la salud mental se apoyan históricamente en dos herramientas de clasificación categorial predominantes: el DSM IV (creado por la APA) y la CIE 10 (creada por la OMS). A través del mentefacto diferencial, se evidencia que aunque ambos sistemas buscan el mismo propósito de identificar patologías, poseen orígenes, alcances y estructuras diferenciadas.',
+    similarities: [
+      'Propósito taxonómico: ambos son manuales de clasificación que organizan los trastornos mentales en categorías basadas en criterios descriptivos (signos y síntomas).',
+      'Lenguaje común: los dos facilitan la comunicación entre distintos profesionales de la salud (psicólogos, psiquiatras, médicos e investigadores) a nivel internacional.',
+      'Guía clínica: ambos sirven como punto de partida para decidir el pronóstico clínico y orientar el tratamiento adecuado para el paciente.',
+    ],
+    differences: [
+      'Autoría y enfoque: el DSM es elaborado por la APA y está más ligado a la práctica clínica e investigación psiquiátrica, predominantemente estadounidense. La CIE es elaborada por la OMS y tiene un enfoque universal orientado a salud pública, epidemiología y políticas de salud globales.',
+      'Alcance: el DSM es exclusivo para trastornos mentales y del comportamiento. La CIE abarca todas las enfermedades del cuerpo humano, donde la salud mental representa solo un capítulo.',
+      'Estructura: históricamente, el DSM IV se caracterizó por su evaluación multiaxial en cinco ejes; la CIE 10 emplea un sistema de códigos alfanuméricos orientado al registro de morbilidad y mortalidad en sistemas de salud.',
+    ],
+  },
 ]
 
 export function getExerciseById(id: string): ExerciseDef | undefined {
@@ -175,5 +260,7 @@ export function exerciseKindLabel(ex: ExerciseDef): string {
       return 'Datos agrupados'
     case 'central':
       return 'Tendencia central'
+    case 'conceptual':
+      return 'Mapa conceptual'
   }
 }

@@ -77,6 +77,7 @@ function HomePageContent() {
   const frequency = exercises.filter((e) => e.kind === 'frequency')
   const grouped = exercises.filter((e) => e.kind === 'grouped')
   const central = exercises.filter((e) => e.kind === 'central')
+  const conceptual = exercises.filter((e) => e.kind === 'conceptual')
 
   return (
     <AppShell pdfScope="home">
@@ -108,6 +109,12 @@ function HomePageContent() {
           title="Media, mediana y moda"
           description="Tendencia central en datos no agrupados; guía ampliada para mediana con n par."
           items={central}
+        />
+        <ExerciseSection
+          id="home-conceptual"
+          title="Diagramas conceptuales"
+          description="Mentefactos diferenciales con conceptos, resumen, semejanzas y diferencias."
+          items={conceptual}
         />
       </div>
     </AppShell>
