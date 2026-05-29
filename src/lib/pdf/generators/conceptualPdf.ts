@@ -1,11 +1,46 @@
-import type { ConceptualExerciseDef } from '@/data/exercises'
+import type { ConceptDiagramLayout, ConceptualExerciseDef } from '@/data/exercises'
 import { exerciseKindLabel } from '@/data/exercises'
 import { PdfDocument } from '../document/PdfDocument'
+
+function diagramDataContent(diagram: ConceptDiagramLayout): string {
+  return `P1 como categoría superior; ${diagram.leftSystemId} y ${diagram.rightSystemId} como sistemas comparados; ${diagram.leftTraitIds.join('-')} y ${diagram.rightTraitIds.join('-')} como rasgos diferenciales.`
+}
+
+function buildDiagramRows(exercise: ConceptualExerciseDef): string[][] {
+  const byId = new Map(exercise.nodes.map((n) => [n.id, n]))
+  const { diagram } = exercise
+  const rows: string[][] = []
+
+  const root = byId.get(diagram.rootId)!
+  rows.push([root.id, root.label, 'Categoría superior o fin del proceso.'])
+
+  const leftSystem = byId.get(diagram.leftSystemId)!
+  rows.push([leftSystem.id, leftSystem.label, 'Sistema de clasificación categorial en salud mental.'])
+  for (const id of diagram.leftTraitIds) {
+    const node = byId.get(id)!
+    rows.push([id, node.label, 'Rasgo del DSM IV.'])
+  }
+
+  const rightSystem = byId.get(diagram.rightSystemId)!
+  rows.push([
+    rightSystem.id,
+    rightSystem.label,
+    'Clasificación internacional de enfermedades.',
+  ])
+  for (const id of diagram.rightTraitIds) {
+    const node = byId.get(id)!
+    rows.push([id, node.label, 'Rasgo de la CIE 10.'])
+  }
+
+  return rows
+}
 
 export function generateConceptualPdf(
   exercise: ConceptualExerciseDef,
 ): PdfDocument {
   const doc = new PdfDocument(exercise.title)
+  const firstId = exercise.nodes[0]?.id ?? 'P1'
+  const lastId = exercise.nodes[exercise.nodes.length - 1]?.id ?? 'P10'
 
   doc.addExerciseCover({
     label: exercise.exerciseLabel,
@@ -16,7 +51,7 @@ export function generateConceptualPdf(
 
   doc.addDataPanel(
     'Estructura del diagrama',
-    'P1 como categoría superior; P2 y P5 como sistemas comparados; P3-P4 y P6-P7 como rasgos diferenciales.',
+    diagramDataContent(exercise.diagram),
   )
 
   doc.addSectionTitle(`Diagrama D1 — ${exercise.diagramTitle}`)
@@ -26,19 +61,11 @@ export function generateConceptualPdf(
   )
   doc.addTable(
     [['Punto', 'Elemento', 'Relación']],
-    [
-      ['P1', 'Diagnóstico clínico', 'Categoría superior o fin del proceso.'],
-      ['P2', 'DSM IV', 'Sistema de clasificación categorial en salud mental.'],
-      ['P3', 'APA', 'Autoría institucional del DSM IV.'],
-      ['P4', 'Multiaxial', 'Rasgo estructural principal del DSM IV.'],
-      ['P5', 'CIE 10', 'Clasificación internacional de enfermedades.'],
-      ['P6', 'OMS', 'Autoría institucional de la CIE 10.'],
-      ['P7', 'General / Integral', 'Alcance global de la CIE (no solo salud mental).'],
-    ],
+    buildDiagramRows(exercise),
     { align: ['center', 'left', 'left'], widths: [0.7, 1.8, 3.5] },
   )
 
-  doc.addSectionTitle('Conceptos (P1 a P7)')
+  doc.addSectionTitle(`Conceptos (${firstId} a ${lastId})`)
   doc.addTable(
     [['Punto', 'Concepto']],
     exercise.nodes.map((node) => [

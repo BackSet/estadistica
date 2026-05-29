@@ -9,10 +9,19 @@ import {
 } from '@/components/ui/card'
 import { NoteBlock } from '@/components/ui/info-blocks'
 import { Separator } from '@/components/ui/separator'
-import type { ConceptNodeDef, ConceptualExerciseDef } from '@/data/exercises'
+import type { ConceptDiagramLayout, ConceptNodeDef, ConceptualExerciseDef } from '@/data/exercises'
 
 type Props = {
   exercise: ConceptualExerciseDef
+}
+
+function diagramDataContent(diagram: ConceptDiagramLayout): string {
+  return `P1 como categoría superior; ${diagram.leftSystemId} y ${diagram.rightSystemId} como sistemas comparados; ${diagram.leftTraitIds.join('-')} y ${diagram.rightTraitIds.join('-')} como rasgos diferenciales.`
+}
+
+function conceptRangeLabel(nodes: ConceptNodeDef[]): string {
+  if (nodes.length === 0) return 'Conceptos'
+  return `Conceptos (${nodes[0].id} a ${nodes[nodes.length - 1].id})`
 }
 
 function DiagramBox({
@@ -30,6 +39,15 @@ function DiagramBox({
         {point.id}
       </p>
       <p className="text-sm font-semibold">{point.label}</p>
+    </div>
+  )
+}
+
+function TraitRow({ point }: { point: ConceptNodeDef }) {
+  return (
+    <div className="flex items-start gap-2 text-sm">
+      <Badge variant="outline">{point.id}</Badge>
+      <span>{point.label}</span>
     </div>
   )
 }
@@ -52,13 +70,12 @@ function ConceptCard({ point }: { point: ConceptNodeDef }) {
 
 export function DiagnosticDiagramExercise({ exercise }: Props) {
   const byId = new Map(exercise.nodes.map((n) => [n.id, n]))
-  const p1 = byId.get('P1')!
-  const p2 = byId.get('P2')!
-  const p3 = byId.get('P3')!
-  const p4 = byId.get('P4')!
-  const p5 = byId.get('P5')!
-  const p6 = byId.get('P6')!
-  const p7 = byId.get('P7')!
+  const { diagram } = exercise
+  const root = byId.get(diagram.rootId)!
+  const leftSystem = byId.get(diagram.leftSystemId)!
+  const rightSystem = byId.get(diagram.rightSystemId)!
+  const leftTraits = diagram.leftTraitIds.map((id) => byId.get(id)!)
+  const rightTraits = diagram.rightTraitIds.map((id) => byId.get(id)!)
 
   return (
     <ExerciseLayout
@@ -66,7 +83,7 @@ export function DiagnosticDiagramExercise({ exercise }: Props) {
       title={exercise.title}
       context={exercise.context}
       dataLabel="Estructura del diagrama"
-      dataContent="P1 como categoría superior; P2 y P5 como sistemas comparados; P3-P4 y P6-P7 como rasgos diferenciales."
+      dataContent={diagramDataContent(diagram)}
     >
       <section className="space-y-4" aria-labelledby="d1-diagram-heading">
         <div>
@@ -81,36 +98,26 @@ export function DiagnosticDiagramExercise({ exercise }: Props) {
         <Card>
           <CardContent className="space-y-3 pt-4">
             <div className="mx-auto max-w-xl">
-              <DiagramBox point={p1} />
+              <DiagramBox point={root} />
               <div className="mx-auto h-5 w-px bg-border" />
               <div className="grid grid-cols-[1fr_auto_1fr] items-start gap-3">
                 <div className="space-y-2">
-                  <DiagramBox point={p2} />
+                  <DiagramBox point={leftSystem} />
                   <div className="space-y-2 rounded-md border border-dashed p-2">
                     <CardDescription className="text-xs">Características DSM IV</CardDescription>
-                    <div className="flex items-start gap-2 text-sm">
-                      <Badge variant="outline">{p3.id}</Badge>
-                      <span>{p3.label}</span>
-                    </div>
-                    <div className="flex items-start gap-2 text-sm">
-                      <Badge variant="outline">{p4.id}</Badge>
-                      <span>{p4.label}</span>
-                    </div>
+                    {leftTraits.map((trait) => (
+                      <TraitRow key={trait.id} point={trait} />
+                    ))}
                   </div>
                 </div>
                 <div className="pt-5 text-muted-foreground">↔</div>
                 <div className="space-y-2">
-                  <DiagramBox point={p5} />
+                  <DiagramBox point={rightSystem} />
                   <div className="space-y-2 rounded-md border border-dashed p-2">
                     <CardDescription className="text-xs">Características CIE 10</CardDescription>
-                    <div className="flex items-start gap-2 text-sm">
-                      <Badge variant="outline">{p6.id}</Badge>
-                      <span>{p6.label}</span>
-                    </div>
-                    <div className="flex items-start gap-2 text-sm">
-                      <Badge variant="outline">{p7.id}</Badge>
-                      <span>{p7.label}</span>
-                    </div>
+                    {rightTraits.map((trait) => (
+                      <TraitRow key={trait.id} point={trait} />
+                    ))}
                   </div>
                 </div>
               </div>
@@ -123,7 +130,7 @@ export function DiagnosticDiagramExercise({ exercise }: Props) {
 
       <section className="space-y-4" aria-labelledby="d1-concepts-heading">
         <h3 id="d1-concepts-heading" className="text-lg font-semibold">
-          Conceptos (P1 a P7)
+          {conceptRangeLabel(exercise.nodes)}
         </h3>
         <div className="grid gap-3 md:grid-cols-2">
           {exercise.nodes.map((node) => (

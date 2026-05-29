@@ -43,10 +43,30 @@ export type GroupedExerciseDef = {
   chartTitle: string
 }
 
+export type ConceptNodeId =
+  | 'P1'
+  | 'P2'
+  | 'P3'
+  | 'P4'
+  | 'P5'
+  | 'P6'
+  | 'P7'
+  | 'P8'
+  | 'P9'
+  | 'P10'
+
 export type ConceptNodeDef = {
-  id: 'P1' | 'P2' | 'P3' | 'P4' | 'P5' | 'P6' | 'P7'
+  id: ConceptNodeId
   label: string
   concept: string
+}
+
+export type ConceptDiagramLayout = {
+  rootId: 'P1'
+  leftSystemId: 'P2'
+  rightSystemId: 'P5'
+  leftTraitIds: ConceptNodeId[]
+  rightTraitIds: ConceptNodeId[]
 }
 
 export type ConceptualExerciseDef = {
@@ -56,6 +76,7 @@ export type ConceptualExerciseDef = {
   title: string
   context: string
   diagramTitle: string
+  diagram: ConceptDiagramLayout
   nodes: ConceptNodeDef[]
   summary: string
   similarities: string[]
@@ -185,6 +206,13 @@ export const exercises: ExerciseDef[] = [
     context:
       'Comparación conceptual entre los dos sistemas de clasificación más usados históricamente en psicopatología clínica.',
     diagramTitle: 'Diagnóstico clínico',
+    diagram: {
+      rootId: 'P1',
+      leftSystemId: 'P2',
+      rightSystemId: 'P5',
+      leftTraitIds: ['P3', 'P4', 'P8', 'P10'],
+      rightTraitIds: ['P6', 'P7', 'P9'],
+    },
     nodes: [
       {
         id: 'P1',
@@ -228,18 +256,36 @@ export const exercises: ExerciseDef[] = [
         concept:
           'A diferencia del DSM, la CIE abarca todo el espectro de las enfermedades médicas (físicas y mentales). Esto sitúa a la psicopatología dentro de un marco médico integral de salud, relacionando los trastornos mentales con el resto del funcionamiento orgánico.',
       },
+      {
+        id: 'P8',
+        label: 'Específico (Salud Mental)',
+        concept:
+          'Enfoque centrado únicamente en psicopatología y trastornos del comportamiento, excluyendo otras enfermedades médicas.',
+      },
+      {
+        id: 'P9',
+        label: 'Alfanumérico',
+        concept:
+          'Sistema de códigos (letras y números, como el Capítulo F) usado por la CIE para registrar enfermedades universalmente.',
+      },
+      {
+        id: 'P10',
+        label: 'Criterios Operativos',
+        concept:
+          'Uso estricto de listas de síntomas comprobables y tiempos de duración específicos para asegurar la fiabilidad diagnóstica en el DSM.',
+      },
     ],
     summary:
-      'Este trabajo expone al diagnóstico clínico como la supra-clase o el fin último de la evaluación en psicopatología. Para llegar a este diagnóstico, los profesionales de la salud mental se apoyan históricamente en dos herramientas de clasificación categorial predominantes: el DSM IV (creado por la APA) y la CIE 10 (creada por la OMS). A través del mentefacto diferencial, se evidencia que aunque ambos sistemas buscan el mismo propósito de identificar patologías, poseen orígenes, alcances y estructuras diferenciadas.',
+      'Este trabajo expone al Diagnóstico Clínico como el concepto central o supra-clase en la psicopatología. Para llegar a este diagnóstico, los profesionales se apoyan en dos herramientas principales: el DSM IV y la CIE 10. A través del mentefacto diferencial, se evidencia que, aunque ambos sistemas comparten la meta de clasificar patologías, difieren sustancialmente en su origen, alcance y métodos de estructuración.',
     similarities: [
-      'Propósito taxonómico: ambos son manuales de clasificación que organizan los trastornos mentales en categorías basadas en criterios descriptivos (signos y síntomas).',
-      'Lenguaje común: los dos facilitan la comunicación entre distintos profesionales de la salud (psicólogos, psiquiatras, médicos e investigadores) a nivel internacional.',
-      'Guía clínica: ambos sirven como punto de partida para decidir el pronóstico clínico y orientar el tratamiento adecuado para el paciente.',
+      'Propósito taxonómico: ambos organizan los trastornos mentales en categorías basadas en signos y síntomas descriptivos.',
+      'Lenguaje común: facilitan la comunicación profesional y científica a nivel internacional en el ámbito de la salud.',
+      'Guía clínica: sirven como punto de partida fundamental para establecer un pronóstico y orientar el tratamiento del paciente.',
     ],
     differences: [
-      'Autoría y enfoque: el DSM es elaborado por la APA y está más ligado a la práctica clínica e investigación psiquiátrica, predominantemente estadounidense. La CIE es elaborada por la OMS y tiene un enfoque universal orientado a salud pública, epidemiología y políticas de salud globales.',
-      'Alcance: el DSM es exclusivo para trastornos mentales y del comportamiento. La CIE abarca todas las enfermedades del cuerpo humano, donde la salud mental representa solo un capítulo.',
-      'Estructura: históricamente, el DSM IV se caracterizó por su evaluación multiaxial en cinco ejes; la CIE 10 emplea un sistema de códigos alfanuméricos orientado al registro de morbilidad y mortalidad en sistemas de salud.',
+      'Autoría e influencia: el DSM IV fue creado por la APA (P3) y tiene un enfoque clínico-investigativo estadounidense; la CIE 10 es elaborada por la OMS (P6) con un enfoque global en la salud pública.',
+      'Alcance del manual: el DSM IV es Específico (P8) y exclusivo para la salud mental; la CIE 10 es un manual General / Integral (P7) que abarca todas las enfermedades del cuerpo humano.',
+      'Estructura y evaluación: el DSM IV organizaba al paciente de forma Multiaxial (P4) y exigía el cumplimiento de Criterios Operativos (P10) estrictos; por su parte, la CIE 10 clasifica las enfermedades mediante un sistema de códigos Alfanumérico (P9) enfocado en registrar morbilidad y mortalidad.',
     ],
   },
 ]
