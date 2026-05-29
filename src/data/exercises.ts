@@ -64,7 +64,7 @@ export type ConceptNodeDef = {
 export type ConceptDiagramLayout = {
   rootId: 'P1'
   leftSystemId: 'P2'
-  rightSystemId: 'P5'
+  rightSystemId: 'P7'
   leftTraitIds: ConceptNodeId[]
   rightTraitIds: ConceptNodeId[]
 }
@@ -209,9 +209,9 @@ export const exercises: ExerciseDef[] = [
     diagram: {
       rootId: 'P1',
       leftSystemId: 'P2',
-      rightSystemId: 'P5',
-      leftTraitIds: ['P3', 'P4', 'P8', 'P10'],
-      rightTraitIds: ['P6', 'P7', 'P9'],
+      rightSystemId: 'P7',
+      leftTraitIds: ['P3', 'P4', 'P5', 'P6'],
+      rightTraitIds: ['P8', 'P9', 'P10'],
     },
     nodes: [
       {
@@ -240,39 +240,39 @@ export const exercises: ExerciseDef[] = [
       },
       {
         id: 'P5',
-        label: 'CIE 10',
-        concept:
-          'Es la Clasificación Internacional de Enfermedades (10ma revisión). Es el estándar global para el reporte de enfermedades y condiciones de salud, en la cual los trastornos mentales y del comportamiento ocupan una sección específica (Capítulo V o letra F).',
-      },
-      {
-        id: 'P6',
-        label: 'OMS',
-        concept:
-          'Es la agencia de la Organización de las Naciones Unidas responsable de la creación y publicación de la CIE. Le otorga a este manual un carácter oficial, global y un enfoque orientado a la salud pública y la recolección de estadísticas epidemiológicas a nivel mundial.',
-      },
-      {
-        id: 'P7',
-        label: 'General / Integral',
-        concept:
-          'A diferencia del DSM, la CIE abarca todo el espectro de las enfermedades médicas (físicas y mentales). Esto sitúa a la psicopatología dentro de un marco médico integral de salud, relacionando los trastornos mentales con el resto del funcionamiento orgánico.',
-      },
-      {
-        id: 'P8',
         label: 'Específico (Salud Mental)',
         concept:
           'Enfoque centrado únicamente en psicopatología y trastornos del comportamiento, excluyendo otras enfermedades médicas.',
       },
       {
-        id: 'P9',
-        label: 'Alfanumérico',
-        concept:
-          'Sistema de códigos (letras y números, como el Capítulo F) usado por la CIE para registrar enfermedades universalmente.',
-      },
-      {
-        id: 'P10',
+        id: 'P6',
         label: 'Criterios Operativos',
         concept:
           'Uso estricto de listas de síntomas comprobables y tiempos de duración específicos para asegurar la fiabilidad diagnóstica en el DSM.',
+      },
+      {
+        id: 'P7',
+        label: 'CIE 10',
+        concept:
+          'Es la Clasificación Internacional de Enfermedades (10ma revisión). Es el estándar global para el reporte de enfermedades y condiciones de salud, en la cual los trastornos mentales y del comportamiento ocupan una sección específica (Capítulo V o letra F).',
+      },
+      {
+        id: 'P8',
+        label: 'OMS',
+        concept:
+          'Es la agencia de la Organización de las Naciones Unidas responsable de la creación y publicación de la CIE. Le otorga a este manual un carácter oficial, global y un enfoque orientado a la salud pública y la recolección de estadísticas epidemiológicas a nivel mundial.',
+      },
+      {
+        id: 'P9',
+        label: 'General / Integral',
+        concept:
+          'A diferencia del DSM, la CIE abarca todo el espectro de las enfermedades médicas (físicas y mentales). Esto sitúa a la psicopatología dentro de un marco médico integral de salud, relacionando los trastornos mentales con el resto del funcionamiento orgánico.',
+      },
+      {
+        id: 'P10',
+        label: 'Alfanumérico',
+        concept:
+          'Sistema de códigos (letras y números, como el Capítulo F) usado por la CIE para registrar enfermedades universalmente.',
       },
     ],
     summary:
@@ -283,9 +283,9 @@ export const exercises: ExerciseDef[] = [
       'Guía clínica: sirven como punto de partida fundamental para establecer un pronóstico y orientar el tratamiento del paciente.',
     ],
     differences: [
-      'Autoría e influencia: el DSM IV fue creado por la APA (P3) y tiene un enfoque clínico-investigativo estadounidense; la CIE 10 es elaborada por la OMS (P6) con un enfoque global en la salud pública.',
-      'Alcance del manual: el DSM IV es Específico (P8) y exclusivo para la salud mental; la CIE 10 es un manual General / Integral (P7) que abarca todas las enfermedades del cuerpo humano.',
-      'Estructura y evaluación: el DSM IV organizaba al paciente de forma Multiaxial (P4) y exigía el cumplimiento de Criterios Operativos (P10) estrictos; por su parte, la CIE 10 clasifica las enfermedades mediante un sistema de códigos Alfanumérico (P9) enfocado en registrar morbilidad y mortalidad.',
+      'Autoría e influencia: el DSM IV fue creado por la APA (P3) y tiene un enfoque clínico-investigativo estadounidense; la CIE 10 es elaborada por la OMS (P8) con un enfoque global en la salud pública.',
+      'Alcance del manual: el DSM IV es Específico (P5) y exclusivo para la salud mental; la CIE 10 es un manual General / Integral (P9) que abarca todas las enfermedades del cuerpo humano.',
+      'Estructura y evaluación: el DSM IV organizaba al paciente de forma Multiaxial (P4) y exigía el cumplimiento de Criterios Operativos (P6) estrictos; por su parte, la CIE 10 clasifica las enfermedades mediante un sistema de códigos Alfanumérico (P10) enfocado en registrar morbilidad y mortalidad.',
     ],
   },
 ]
