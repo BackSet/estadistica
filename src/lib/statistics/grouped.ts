@@ -118,7 +118,7 @@ export function buildGroupedAnalysis(
           origin: 'Logaritmo en base 10 de n (en calculadora: log o log10).',
         },
         {
-          term: '3,322',
+          term: 'Constante de Sturges',
           value: '3,322',
           origin: 'Constante de Sturges cuando se usa log₁₀; ≈ 1/log₁₀(2).',
         },
@@ -135,12 +135,12 @@ export function buildGroupedAnalysis(
       formula: `C = Rango / K = ${range} / ${k} = ${amplitudeRawStr} → ${amplitude}`,
       legends: [
         {
-          term: `${range}`,
+          term: 'Rango',
           value: String(range),
           origin: 'Rango del paso 1.',
         },
         {
-          term: `${k}`,
+          term: 'K',
           value: String(k),
           origin: 'Número de intervalos del paso 2.',
         },

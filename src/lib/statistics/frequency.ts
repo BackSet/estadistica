@@ -147,12 +147,12 @@ export function buildFrequencyResolutionSteps(
       formula: `fᵢ/n = ${first.fi}/${table.n} ≈ ${Number(first.fr.toFixed(3))}`,
       legends: [
         {
-          term: `${first.fi}`,
+          term: 'fᵢ',
           value: String(first.fi),
           origin: 'fᵢ de la fila (paso anterior).',
         },
         {
-          term: `${table.n}`,
+          term: 'n',
           value: String(table.n),
           origin: 'n total de observaciones.',
         },
@@ -169,7 +169,7 @@ export function buildFrequencyResolutionSteps(
           origin: 'Misma razón del paso 4.',
         },
         {
-          term: '100',
+          term: 'Factor porcentual',
           value: '100',
           origin: 'Factor para expresar la proporción en porcentaje.',
         },
@@ -191,7 +191,7 @@ export function buildFrequencyResolutionSteps(
         ...(second
           ? [
               {
-                term: `${second.fi}`,
+                term: 'fᵢ segunda fila',
                 value: String(second.fi),
                 origin: 'fᵢ de la segunda fila que se suma al acumulado.',
               },

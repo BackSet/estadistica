@@ -60,12 +60,12 @@ export function meanWithSteps(values: number[]): MeanWithSteps {
       formula: `x̄ = Σxᵢ / n = ${sum} ÷ ${n} = ${meanStr}`,
       legends: [
         {
-          term: `${sum}`,
+          term: 'Σxᵢ',
           value: String(sum),
           origin: 'Total del paso 2.',
         },
         {
-          term: `${n}`,
+          term: 'n',
           value: String(n),
           origin: 'Tamaño muestral del paso 1.',
         },
@@ -130,7 +130,7 @@ export function modeWithSteps(values: number[]): ModeWithSteps {
       formula: `Mo = ${top} (frecuencia máxima = ${maxCount})`,
       legends: [
         {
-          term: `${maxCount}`,
+          term: 'Frecuencia máxima',
           value: String(maxCount),
           origin: 'Mayor conteo entre todos los valores distintos.',
         },
@@ -249,12 +249,12 @@ export function medianWithSteps(values: number[]): MedianWithSteps {
       formula: `Me = (${leftValue} + ${rightValue}) / 2 = ${meRounded}`,
       legends: [
         {
-          term: String(leftValue),
+          term: `x₍${leftPos}₎`,
           value: String(leftValue),
           origin: `Valor en la posición ${leftPos} (n/2).`,
         },
         {
-          term: String(rightValue),
+          term: `x₍${rightPos}₎`,
           value: String(rightValue),
           origin: `Valor en la posición ${rightPos} (n/2 + 1).`,
         },
