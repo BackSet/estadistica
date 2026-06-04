@@ -6,6 +6,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import type { ExerciseDef } from '@/data/exercises'
+import { DownloadExcelAction } from './DownloadExcelAction'
 import { DownloadPdfAction } from './DownloadPdfAction'
 
 type Props =
@@ -19,18 +20,27 @@ export function PageFooter(props: Props) {
         <CardHeader className="gap-0.5 pb-2">
           <CardTitle className="text-sm">Exportar esta página</CardTitle>
           <CardDescription className="text-xs leading-snug">
-            PDF en A4 con diseño propio: texto seleccionable, tablas y pasos de
-            resolución (no es una captura de pantalla).
+            Mismo diseño que en pantalla: PDF en A4 con texto seleccionable o
+            Excel (.xlsx) con tablas booktabs y formato numérico.
           </CardDescription>
         </CardHeader>
-        <CardContent className="pt-0">
+        <CardContent className="flex flex-wrap gap-2 pt-0">
           {props.pdfScope === 'home' ? (
-            <DownloadPdfAction scope="home" />
+            <>
+              <DownloadPdfAction scope="home" />
+              <DownloadExcelAction scope="home" />
+            </>
           ) : (
-            <DownloadPdfAction
-              scope="exercise"
-              exercise={props.pdfScope.exercise}
-            />
+            <>
+              <DownloadPdfAction
+                scope="exercise"
+                exercise={props.pdfScope.exercise}
+              />
+              <DownloadExcelAction
+                scope="exercise"
+                exercise={props.pdfScope.exercise}
+              />
+            </>
           )}
         </CardContent>
       </Card>
