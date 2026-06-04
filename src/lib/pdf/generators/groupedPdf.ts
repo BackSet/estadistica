@@ -10,7 +10,14 @@ export function generateGroupedPdf(exercise: GroupedExerciseDef): PdfDocument {
     exercise.max,
     exercise.n,
     exercise.intervals,
+    {
+      subjectLabel: exercise.subjectLabel,
+      subjectLabelPlural: exercise.subjectLabelPlural,
+      variableLabel: exercise.variableLabel,
+      unit: exercise.unit,
+    },
   )
+  const subjectLabelPlural = exercise.subjectLabelPlural ?? 'familias'
 
   doc.addExerciseCover({
     label: exercise.exerciseLabel,
@@ -21,8 +28,24 @@ export function generateGroupedPdf(exercise: GroupedExerciseDef): PdfDocument {
 
   doc.addDataPanel(
     'Resumen de los datos',
-    `${exercise.dataSummary} · n = ${exercise.n} familias · unidad: ${exercise.unit}`,
+    `${exercise.dataSummary} · n = ${exercise.n} ${subjectLabelPlural} · unidad: ${exercise.unit}`,
   )
+
+  if (exercise.rawValues) {
+    const rawValueRows = exercise.rawValues.reduce<string[][]>((rows, value, index) => {
+      const rowIndex = Math.floor(index / 5)
+      rows[rowIndex] = rows[rowIndex] ?? []
+      rows[rowIndex].push(String(index + 1), String(value))
+      return rows
+    }, [])
+
+    doc.addSectionTitle('Cuadro de datos')
+    doc.addTable(
+      [['N°', 'Dato', 'N°', 'Dato', 'N°', 'Dato', 'N°', 'Dato', 'N°', 'Dato']],
+      rawValueRows,
+    )
+    doc.addBodyText('De este cuadro se obtiene n, Xmax y Xmin.', { muted: true })
+  }
 
   doc.addSectionTitle('Construcción de la tabla (intervalos)')
   doc.addResolutionSteps(analysis.setupSteps)

@@ -35,6 +35,10 @@ export type GroupedExerciseDef = {
   title: string
   context: string
   dataSummary: string
+  rawValues?: number[]
+  subjectLabel?: string
+  subjectLabelPlural?: string
+  variableLabel?: string
   min: number
   max: number
   n: number
@@ -119,7 +123,7 @@ export const exercises: ExerciseDef[] = [
   {
     kind: 'grouped',
     id: 'grouped-income',
-    exerciseLabel: '★',
+    exerciseLabel: '3',
     title: 'Datos agrupados — Ingreso familiar mensual (USD)',
     context:
       'Ingreso mensual familiar en USD de 80 familias atendidas en Quito (programa de trabajo social).',
@@ -139,6 +143,35 @@ export const exercises: ExerciseDef[] = [
       { label: '500-549', xi: 525, fi: 4 },
     ],
     chartTitle: 'Distribución de ingresos por marca de clase (fᵢ)',
+  },
+  {
+    kind: 'grouped',
+    id: 'grouped-stress-scores',
+    exerciseLabel: '4',
+    title: 'Datos agrupados — Puntajes de estrés percibido en estudiantes',
+    context:
+      'En una encuesta ficticia se registró el puntaje de estrés percibido de 25 estudiantes en una escala de 10 a 40 puntos.',
+    dataSummary: '25 puntajes ficticios entre 10 y 39 puntos',
+    rawValues: [
+      10, 12, 14, 15, 17, 18, 19, 20, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+      31, 32, 33, 34, 35, 36, 38, 39,
+    ],
+    subjectLabel: 'estudiante',
+    subjectLabelPlural: 'estudiantes',
+    variableLabel: 'puntaje de estrés',
+    min: 10,
+    max: 39,
+    n: 25,
+    unit: 'puntos',
+    intervals: [
+      { label: '10-14', xi: 12, fi: 3 },
+      { label: '15-19', xi: 17, fi: 5 },
+      { label: '20-24', xi: 22, fi: 4 },
+      { label: '25-29', xi: 27, fi: 5 },
+      { label: '30-34', xi: 32, fi: 5 },
+      { label: '35-39', xi: 37, fi: 3 },
+    ],
+    chartTitle: 'Distribución de puntajes por marca de clase (fᵢ)',
   },
   {
     kind: 'central',

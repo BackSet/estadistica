@@ -37,108 +37,94 @@ export function BarChart({ rows, barLabelFormatter, describedById }: Props) {
   const scaleY = (fi: number) => (fi / yMax) * innerH
 
   return (
-    <div
-      className={cn(
-        'rounded-xl border bg-card p-4',
-        'print:break-inside-avoid',
-      )}
+    <svg
+      className={cn('mx-auto block h-auto w-full max-w-full', 'font-sans')}
+      viewBox={`0 0 ${VB_W} ${VB_H}`}
+      role="img"
+      aria-label="Gráfico de barras de frecuencias absolutas"
+      {...(describedById ? { 'aria-describedby': describedById } : {})}
     >
-      <svg
-        className="mx-auto block h-auto w-full max-w-full"
-        viewBox={`0 0 ${VB_W} ${VB_H}`}
-        role="img"
-        aria-label="Gráfico de barras de frecuencias absolutas"
-        {...(describedById ? { 'aria-describedby': describedById } : {})}
-      >
-        {yTicks.map((tick) => {
-          const y = yBase - scaleY(tick)
-          return (
-            <line
-              key={`g-${tick}`}
-              className="stroke-border"
-              strokeDasharray="4 4"
-              x1={PAD.l}
-              y1={y}
-              x2={VB_W - PAD.r}
-              y2={y}
-            />
-          )
-        })}
+      {/* Rejilla horizontal sutil */}
+      {yTicks.map((tick) => {
+        const y = yBase - scaleY(tick)
+        return (
+          <line
+            key={`g-${tick}`}
+            className="stroke-border"
+            strokeWidth={1}
+            x1={PAD.l}
+            y1={y}
+            x2={VB_W - PAD.r}
+            y2={y}
+          />
+        )
+      })}
 
-        <line
-          className="stroke-foreground/40"
-          strokeWidth={1}
-          x1={PAD.l}
-          y1={yBase}
-          x2={VB_W - PAD.r}
-          y2={yBase}
-        />
-        <line
-          className="stroke-foreground/40"
-          strokeWidth={1}
-          x1={PAD.l}
-          y1={PAD.t}
-          x2={PAD.l}
-          y2={yBase}
-        />
+      {/* Eje base */}
+      <line
+        className="stroke-rule"
+        strokeWidth={1.25}
+        x1={PAD.l}
+        y1={yBase}
+        x2={VB_W - PAD.r}
+        y2={yBase}
+      />
 
-        {yTicks.map((tick) => {
-          const y = yBase - scaleY(tick) + 4
-          return (
-            <text
-              key={`yt-${tick}`}
-              className="fill-muted-foreground text-[11px]"
-              x={PAD.l - 8}
+      {yTicks.map((tick) => {
+        const y = yBase - scaleY(tick) + 4
+        return (
+          <text
+            key={`yt-${tick}`}
+            className="fill-muted-foreground text-[11px]"
+            x={PAD.l - 10}
+            y={y}
+            textAnchor="end"
+          >
+            {tick}
+          </text>
+        )
+      })}
+
+      {rows.map((row, i) => {
+        const x = x0 + i * (barW + gap)
+        const h = scaleY(row.fi)
+        const y = yBase - h
+        const label = barLabelFormatter
+          ? barLabelFormatter(row.xi)
+          : String(row.xi)
+
+        return (
+          <g key={row.xi}>
+            <rect
+              className="fill-primary"
+              x={x}
               y={y}
-              textAnchor="end"
-            >
-              {tick}
-            </text>
-          )
-        })}
-
-        {rows.map((row, i) => {
-          const x = x0 + i * (barW + gap)
-          const h = scaleY(row.fi)
-          const y = yBase - h
-          const label = barLabelFormatter
-            ? barLabelFormatter(row.xi)
-            : String(row.xi)
-          const rx = 5
-
-          return (
-            <g key={row.xi}>
-              <rect
-                className="fill-primary"
-                x={x}
-                y={y}
-                width={barW}
-                height={Math.max(h, 0)}
-                rx={rx}
-                ry={rx}
-              />
-              {row.fi > 0 ? (
-                <text
-                  className="fill-foreground text-[11px] font-medium"
-                  x={x + barW / 2}
-                  y={y - 6}
-                  textAnchor="middle"
-                >
-                  {row.fi}
-                </text>
-              ) : null}
+              width={barW}
+              height={Math.max(h, 0)}
+              rx={2}
+              ry={2}
+            />
+            {row.fi > 0 ? (
               <text
-                className="fill-muted-foreground text-[10px]"
+                className="fill-foreground text-[11px] font-semibold tabular-nums"
                 x={x + barW / 2}
-                y={VB_H - 18}
+                y={y - 6}
                 textAnchor="middle"
               >
-                {label}
+                {row.fi}
               </text>
-            </g>
-          )
-        })}
-      </svg>
-    </div>
+            ) : null}
+            <text
+              className="fill-muted-foreground text-[10px]"
+              x={x + barW / 2}
+              y={VB_H - 18}
+              textAnchor="middle"
+            >
+              {label}
+            </text>
+          </g>
+        )
+      })}
+    </svg>
   )
 }

@@ -1,7 +1,5 @@
 import type { ReactNode } from 'react'
-import { Badge } from '@/components/ui/badge'
 import { ContextCallout, DataPanel } from '@/components/ui/info-blocks'
-import { Separator } from '@/components/ui/separator'
 
 type Props = {
   exerciseLabel: string
@@ -21,23 +19,17 @@ export function ExerciseLayout({
   children,
 }: Props) {
   return (
-    <article className="space-y-5">
-      <header className="space-y-2">
-        <Badge variant="secondary" className="text-sm font-semibold">
-          {exerciseLabel}
-        </Badge>
-        <h2 className="font-display text-2xl font-semibold leading-tight tracking-tight">
+    <article className="space-y-6">
+      <header className="space-y-3 border-b border-rule pb-6">
+        <p className="kicker">{exerciseLabel}</p>
+        <h1 className="font-display text-3xl font-bold leading-[1.15] tracking-tight text-balance sm:text-[2.25rem]">
           {title}
-        </h2>
+        </h1>
+        {context ? <ContextCallout>{context}</ContextCallout> : null}
+        <DataPanel label={dataLabel}>{dataContent}</DataPanel>
       </header>
 
-      {context ? <ContextCallout>{context}</ContextCallout> : null}
-
-      <DataPanel label={dataLabel}>{dataContent}</DataPanel>
-
-      <Separator />
-
-      <div className="space-y-6">{children}</div>
+      <div className="space-y-9">{children}</div>
     </article>
   )
 }

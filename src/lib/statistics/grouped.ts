@@ -29,6 +29,13 @@ export type GroupedAnalysis = {
   meanSteps: ResolutionStep[]
 }
 
+export type GroupedAnalysisOptions = {
+  subjectLabel?: string
+  subjectLabelPlural?: string
+  variableLabel?: string
+  unit?: string
+}
+
 const STURGES_FACTOR = 3.322
 
 export function sturgesK(n: number): { kRaw: number; k: number; log10n: number } {
@@ -43,10 +50,15 @@ export function buildGroupedAnalysis(
   max: number,
   n: number,
   intervals: GroupedIntervalInput[],
+  options: GroupedAnalysisOptions = {},
 ): GroupedAnalysis {
+  const subjectLabelPlural = options.subjectLabelPlural ?? 'familias'
+  const variableLabel = options.variableLabel ?? 'ingreso mensual'
+  const unit = options.unit ?? 'USD'
   const range = max - min
   const { kRaw, k, log10n } = sturgesK(n)
-  const amplitude = range / k
+  const amplitudeRaw = range / k
+  const amplitude = Math.ceil(amplitudeRaw)
 
   let cum = 0
   const rows: GroupedIntervalRow[] = intervals.map((row) => {
@@ -64,22 +76,23 @@ export function buildGroupedAnalysis(
   const mean = sumXifi / n
   const kRawStr = (Math.round(kRaw * 100) / 100).toFixed(2)
   const logStr = (Math.round(log10n * 1000) / 1000).toFixed(3)
+  const amplitudeRawStr = (Math.round(amplitudeRaw * 100) / 100).toFixed(2)
 
   const setupSteps: ResolutionStep[] = [
     {
       step: 1,
-      title: 'Rango',
-      formula: `Rango = Máx − Mín = ${max} − ${min} = ${range}`,
+      title: 'Xmax, Xmin y rango',
+      formula: `Rango = Xmax − Xmin = ${max} − ${min} = ${range}`,
       legends: [
         {
-          term: 'Máx',
+          term: 'Xmax',
           value: String(max),
-          origin: 'Ingreso mensual más alto entre las familias de la muestra.',
+          origin: `Es el ${variableLabel} más alto observado en el cuadro de datos.`,
         },
         {
-          term: 'Mín',
+          term: 'Xmin',
           value: String(min),
-          origin: 'Ingreso mensual más bajo entre las familias de la muestra.',
+          origin: `Es el ${variableLabel} más bajo observado en el cuadro de datos.`,
         },
         {
           term: 'Rango',
@@ -87,7 +100,7 @@ export function buildGroupedAnalysis(
           origin: 'Amplitud total cubierta por los datos (de un extremo al otro).',
         },
       ],
-      note: 'Mide cuántos dólares separan el ingreso mínimo del máximo.',
+      note: `Mide cuántos ${unit} separan el valor menor del valor mayor.`,
     },
     {
       step: 2,
@@ -97,7 +110,7 @@ export function buildGroupedAnalysis(
         {
           term: 'n',
           value: String(n),
-          origin: 'Número de familias (tamaño de la muestra).',
+          origin: `Número de ${subjectLabelPlural} registrados en el cuadro de datos.`,
         },
         {
           term: `log₁₀(${n})`,
@@ -119,7 +132,7 @@ export function buildGroupedAnalysis(
     {
       step: 3,
       title: 'Amplitud de clase (C)',
-      formula: `C = Rango / K = ${range} / ${k} = ${amplitude}`,
+      formula: `C = Rango / K = ${range} / ${k} = ${amplitudeRawStr} → ${amplitude}`,
       legends: [
         {
           term: `${range}`,
@@ -134,7 +147,7 @@ export function buildGroupedAnalysis(
         {
           term: 'C',
           value: String(amplitude),
-          origin: 'Ancho de cada clase en la misma unidad que los datos (USD).',
+          origin: `Ancho de cada intervalo; ${amplitudeRawStr} se redondea hacia arriba para trabajar con intervalos enteros.`,
         },
       ],
     },
@@ -154,7 +167,7 @@ export function buildGroupedAnalysis(
           origin: 'Marca de clase = (límite inferior + límite superior) / 2 de cada intervalo.',
         },
       ],
-      note: `Se forman ${k} intervalos consecutivos hasta cubrir el rango hasta cerca de ${max}.`,
+      note: `Se forman ${k} intervalos consecutivos hasta cubrir desde ${min} hasta ${max}.`,
     },
   ]
 
@@ -172,7 +185,7 @@ export function buildGroupedAnalysis(
         {
           term: 'fᵢ',
           value: 'Por fila',
-          origin: 'Frecuencia absoluta: familias en ese intervalo de ingreso.',
+          origin: `Frecuencia absoluta: cantidad de ${subjectLabelPlural} en ese intervalo.`,
         },
         {
           term: 'Σ(xᵢ·fᵢ)',
@@ -202,7 +215,7 @@ export function buildGroupedAnalysis(
     mean,
     setupSteps,
     tableNote:
-      'Las frecuencias fᵢ provienen del conteo de familias en cada rango de ingreso. Fᵢ acumula fᵢ desde la primera fila.',
+      `Las frecuencias fᵢ provienen del conteo de ${subjectLabelPlural} en cada intervalo. Fᵢ acumula fᵢ desde la primera fila.`,
     meanSteps,
   }
 }

@@ -14,15 +14,14 @@ export function ContextCallout({
   return (
     <aside
       className={cn(
-        'max-w-xl rounded-lg border border-border/70 border-l-[3px] border-l-primary',
-        'bg-muted/35 px-3 py-2.5',
+        'max-w-2xl border-l-2 border-l-primary/70 pl-4',
         className,
       )}
     >
-      <p className="mb-0.5 text-[0.7rem] font-semibold uppercase tracking-wide text-muted-foreground">
-        {label}
+      <p className="kicker mb-1">{label}</p>
+      <p className="text-[0.95rem] leading-relaxed text-foreground/90">
+        {children}
       </p>
-      <p className="text-sm leading-snug text-foreground/90">{children}</p>
     </aside>
   )
 }
@@ -40,12 +39,12 @@ export function DataPanel({
   return (
     <div
       className={cn(
-        'rounded-lg border border-border bg-card px-3 py-2.5',
+        'rounded-md border border-border bg-muted/40 px-4 py-3',
         className,
       )}
     >
-      <p className="mb-1 text-xs font-medium text-muted-foreground">{label}</p>
-      <div className="font-mono text-sm leading-relaxed break-words text-foreground">
+      <p className="kicker mb-1.5">{label}</p>
+      <div className="font-mono text-[0.85rem] leading-relaxed break-words text-foreground">
         {children}
       </div>
     </div>
@@ -116,14 +115,12 @@ export function NoteBlock({
   return (
     <div
       className={cn(
-        'max-w-xl rounded-lg border border-border/70 bg-muted/30 px-3 py-2.5',
+        'max-w-2xl rounded-md border border-border bg-muted/30 px-4 py-3',
         className,
       )}
     >
-      {title ? (
-        <p className="mb-1 text-xs font-medium text-muted-foreground">{title}</p>
-      ) : null}
-      <div className="text-sm leading-snug">{children}</div>
+      {title ? <p className="kicker mb-1.5">{title}</p> : null}
+      <div className="text-[0.9rem] leading-relaxed">{children}</div>
     </div>
   )
 }

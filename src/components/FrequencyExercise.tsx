@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
+import { Figure } from '@/components/ui/figure'
 import { NoteBlock } from '@/components/ui/info-blocks'
 import {
   Table,
@@ -55,24 +55,28 @@ export function FrequencyExercise({ exercise }: Props) {
         <h3 id="freq-table-heading" className="mb-3 text-lg font-semibold">
           Tabla de frecuencias
         </h3>
-        <Card id={legendId}>
-          <CardContent className="pt-4">
+        <Figure
+          id={legendId}
+          label="Tabla 1"
+          caption="Frecuencias absolutas, relativas, porcentuales y acumuladas."
+          captionOnTop
+        >
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>
                     <abbr title={exercise.variableLabel}>xᵢ</abbr>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="text-right">
                     <abbr title="Frecuencia absoluta">fᵢ</abbr>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="text-right">
                     <abbr title="Frecuencia relativa">fᵢ/n</abbr>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="text-right">
                     <abbr title="Frecuencia porcentual">%</abbr>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="text-right">
                     <abbr title="Frecuencia acumulada">Fᵢ</abbr>
                   </TableHead>
                 </TableRow>
@@ -97,8 +101,7 @@ export function FrequencyExercise({ exercise }: Props) {
                 ))}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
+        </Figure>
       </section>
 
       <NoteBlock
@@ -119,13 +122,19 @@ export function FrequencyExercise({ exercise }: Props) {
         <h3 id="freq-chart-heading" className="mb-3 text-lg font-semibold">
           {exercise.chartTitle}
         </h3>
-        <BarChart
-          rows={table.rows}
-          describedById={legendId}
-          barLabelFormatter={
-            exercise.id === 'freq-1' ? (xi) => `${xi}h` : undefined
-          }
-        />
+        <Figure
+          framed
+          label="Figura 1"
+          caption="Frecuencia absoluta de cada valor de la variable."
+        >
+          <BarChart
+            rows={table.rows}
+            describedById={legendId}
+            barLabelFormatter={
+              exercise.id === 'freq-1' ? (xi) => `${xi}h` : undefined
+            }
+          />
+        </Figure>
       </section>
     </ExerciseLayout>
   )

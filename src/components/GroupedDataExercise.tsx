@@ -1,10 +1,5 @@
-import { useMemo } from 'react'
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Fragment, useMemo } from 'react'
+import { Figure } from '@/components/ui/figure'
 import { ResultHighlight } from '@/components/ui/info-blocks'
 import {
   Table,
@@ -32,9 +27,23 @@ export function GroupedDataExercise({ exercise }: Props) {
         exercise.max,
         exercise.n,
         exercise.intervals,
+        {
+          subjectLabel: exercise.subjectLabel,
+          subjectLabelPlural: exercise.subjectLabelPlural,
+          variableLabel: exercise.variableLabel,
+          unit: exercise.unit,
+        },
       ),
     [exercise],
   )
+  const subjectLabelPlural = exercise.subjectLabelPlural ?? 'familias'
+  const rawValueRows =
+    exercise.rawValues?.reduce<number[][]>((rows, value, index) => {
+      const rowIndex = Math.floor(index / 5)
+      rows[rowIndex] = rows[rowIndex] ?? []
+      rows[rowIndex].push(value)
+      return rows
+    }, []) ?? []
 
   const chartRows = analysis.rows.map((r) => ({
     xi: r.xi,
@@ -58,10 +67,65 @@ export function GroupedDataExercise({ exercise }: Props) {
       dataLabel="Resumen de los datos"
       dataContent={
         <>
-          {exercise.dataSummary} · <strong>n = {exercise.n}</strong> familias
+          {exercise.dataSummary} · <strong>n = {exercise.n}</strong>{' '}
+          {subjectLabelPlural}
         </>
       }
     >
+      {exercise.rawValues ? (
+        <section aria-labelledby="grouped-raw-data-heading">
+          <h3 id="grouped-raw-data-heading" className="mb-3 text-lg font-semibold">
+            Cuadro de datos
+          </h3>
+          <Figure
+            label="Cuadro 1"
+            caption="Cada columna representa una observación. De este cuadro se obtiene n, Xmax y Xmin."
+          >
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <Fragment key={`raw-head-${index}`}>
+                        <TableHead className="text-right">
+                          N°
+                        </TableHead>
+                        <TableHead className="text-right">
+                          Dato
+                        </TableHead>
+                      </Fragment>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rawValueRows.map((row, rowIndex) => (
+                    <TableRow key={`raw-row-${rowIndex}`}>
+                      {Array.from({ length: 5 }).map((_, cellIndex) => {
+                        const absoluteIndex = rowIndex * 5 + cellIndex
+                        const value = row[cellIndex]
+
+                        return (
+                          <Fragment key={`raw-cell-${absoluteIndex}`}>
+                            <TableCell
+                              className="text-right text-muted-foreground tabular-nums"
+                            >
+                              {value === undefined ? '' : absoluteIndex + 1}
+                            </TableCell>
+                            <TableCell
+                              className="text-right tabular-nums"
+                            >
+                              {value ?? ''}
+                            </TableCell>
+                          </Fragment>
+                        )
+                      })}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+          </Figure>
+        </section>
+      ) : null}
+
       <section aria-labelledby="grouped-setup-heading">
         <h3 id="grouped-setup-heading" className="mb-4 text-lg font-semibold">
           Construcción de la tabla (intervalos)
@@ -73,20 +137,23 @@ export function GroupedDataExercise({ exercise }: Props) {
         <h3 id="grouped-table-heading" className="mb-3 text-lg font-semibold">
           Tabla de frecuencias por intervalos
         </h3>
-        <Card>
-          <CardContent className="pt-4">
+        <Figure
+          label="Tabla 1"
+          caption={analysis.tableNote}
+          captionOnTop
+        >
             <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Intervalo</TableHead>
-                  <TableHead>
+                  <TableHead className="text-right">
                     <abbr title="Marca de clase">xᵢ</abbr>
                   </TableHead>
-                  <TableHead>
+                  <TableHead className="text-right">
                     <abbr title="Frecuencia absoluta">fᵢ</abbr>
                   </TableHead>
-                  <TableHead>fᵢ/n</TableHead>
-                  <TableHead>
+                  <TableHead className="text-right">fᵢ/n</TableHead>
+                  <TableHead className="text-right">
                     <abbr title="Frecuencia acumulada">Fᵢ</abbr>
                   </TableHead>
                 </TableRow>
@@ -111,11 +178,7 @@ export function GroupedDataExercise({ exercise }: Props) {
                 ))}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
-        <p className="mt-2 text-xs text-muted-foreground">
-          {analysis.tableNote}
-        </p>
+        </Figure>
       </section>
 
       <section aria-labelledby="grouped-mean-heading">
@@ -124,17 +187,18 @@ export function GroupedDataExercise({ exercise }: Props) {
         </h3>
         <ResolutionFlow steps={analysis.meanSteps} />
 
-        <Card className="mt-4 print:break-inside-avoid">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Cálculo auxiliar xᵢ × fᵢ</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
+        <Figure
+          className="mt-4"
+          label="Tabla 2"
+          caption="Cálculo auxiliar xᵢ × fᵢ usado en el numerador de la media."
+          captionOnTop
+        >
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>xᵢ</TableHead>
-                  <TableHead>fᵢ</TableHead>
-                  <TableHead>xᵢ × fᵢ</TableHead>
+                  <TableHead className="text-right">xᵢ</TableHead>
+                  <TableHead className="text-right">fᵢ</TableHead>
+                  <TableHead className="text-right">xᵢ × fᵢ</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -160,8 +224,7 @@ export function GroupedDataExercise({ exercise }: Props) {
                 </TableRow>
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
+        </Figure>
 
         <ResultHighlight
           className="mt-3"
@@ -178,7 +241,13 @@ export function GroupedDataExercise({ exercise }: Props) {
         <h3 id="grouped-chart-heading" className="mb-3 text-lg font-semibold">
           {exercise.chartTitle}
         </h3>
-        <BarChart rows={chartRows} barLabelFormatter={(xi) => `${xi}`} />
+        <Figure
+          framed
+          label="Figura 1"
+          caption="Frecuencia absoluta por marca de clase (xᵢ)."
+        >
+          <BarChart rows={chartRows} barLabelFormatter={(xi) => `${xi}`} />
+        </Figure>
       </section>
     </ExerciseLayout>
   )

@@ -247,7 +247,9 @@ export class PdfDocument {
 
   addDataPanel(label: string, content: string): void {
     const pad = 3
-    this.setFont('normal', PDF.font.body, PDF.colors.text)
+    // Contenido en monoespaciada (espeja la DataPanel web con font-mono).
+    this.pdf.setFont('courier', 'normal')
+    this.pdf.setFontSize(PDF.font.body)
     const lines = this.split(content, this.contentWidth - pad * 2)
     const labelH = 3.5
     const contentH = lines.length * PDF.line.body
@@ -267,7 +269,13 @@ export class PdfDocument {
       this.baseline(top + pad - 1.5, labelH),
     )
 
-    this.setFont('normal', PDF.font.body, PDF.colors.text)
+    this.pdf.setFont('courier', 'normal')
+    this.pdf.setFontSize(PDF.font.body)
+    this.pdf.setTextColor(
+      PDF.colors.text[0],
+      PDF.colors.text[1],
+      PDF.colors.text[2],
+    )
     let ty = top + pad + labelH + 1.2
     for (const line of lines) {
       this.write(line, this.contentLeft + pad, this.baseline(ty, PDF.line.body))
@@ -495,6 +503,11 @@ export class PdfDocument {
     }
   }
 
+  /**
+   * Tabla estilo "booktabs" (distill): sin líneas verticales ni relleno de
+   * cabecera. Solo reglas horizontales — gruesa arriba/abajo, fina bajo la
+   * cabecera y separadores tenues entre filas. Cabecera en gris, versalita.
+   */
   addTable(
     head: string[][],
     body: PdfTableRow[],
@@ -511,54 +524,34 @@ export class PdfDocument {
     const totalW = weights.reduce((a, b) => a + b, 0)
     const colWidths = weights.map((w) => (w / totalW) * this.contentWidth)
 
-    const align = opts?.align ?? Array.from({ length: colCount }, () => 'center' as TableAlign)
-    const padX = 2
-    const padY = 1.8
+    const align =
+      opts?.align ??
+      Array.from({ length: colCount }, () => 'center' as TableAlign)
+    const padX = 2.5
+    const padY = 2
     const lineH = PDF.line.small
 
     const measureRow = (cells: string[]) =>
       cells.map((text, i) => this.split(text, colWidths[i]! - padX * 2))
 
-    const drawRow = (
+    const rowHeight = (wrapped: string[][]) =>
+      Math.max(5.5, Math.max(1, ...wrapped.map((l) => l.length)) * lineH + padY * 2)
+
+    const hRule = (y: number, kind: 'thick' | 'thin' | 'hair'): void => {
+      this.setDraw(kind === 'hair' ? PDF.colors.border : PDF.colors.rule)
+      this.pdf.setLineWidth(kind === 'thick' ? 0.5 : kind === 'thin' ? 0.3 : 0.1)
+      this.pdf.line(this.contentLeft, y, this.contentRight, y)
+    }
+
+    const drawTextRow = (
       cells: string[],
-      type: 'head' | 'body',
-      altIndex: number,
-    ): void => {
+      weight: 'bold' | 'normal',
+      color: Color3,
+    ): number => {
       const wrapped = measureRow(cells)
-      const maxLines = Math.max(1, ...wrapped.map((l) => l.length))
-      const rowH = Math.max(6, maxLines * lineH + padY * 2)
-
-      this.ensureSpace(rowH)
+      const rowH = rowHeight(wrapped)
       const top = this.y
-
-      if (type === 'head') {
-        this.setFill(PDF.colors.primary)
-      } else if (altIndex % 2 === 1) {
-        this.setFill(PDF.colors.fillLight)
-      } else {
-        this.setFill(PDF.colors.white)
-      }
-      this.pdf.rect(this.contentLeft, top, this.contentWidth, rowH, 'F')
-
-      this.setDraw(PDF.colors.border)
-      this.pdf.setLineWidth(0.1)
-      let x = this.contentLeft
-      for (let c = 0; c <= colCount; c++) {
-        this.pdf.line(x, top, x, top + rowH)
-        if (c < colCount) x += colWidths[c]!
-      }
-      this.pdf.line(this.contentLeft, top, this.contentRight, top)
-      this.pdf.line(
-        this.contentLeft,
-        top + rowH,
-        this.contentRight,
-        top + rowH,
-      )
-
-      const weight = type === 'head' ? 'bold' : 'normal'
-      const color = type === 'head' ? PDF.colors.white : PDF.colors.text
       this.setFont(weight, PDF.font.small, color)
-
       let cx = this.contentLeft
       for (let c = 0; c < colCount; c++) {
         const colW = colWidths[c]!
@@ -577,22 +570,35 @@ export class PdfDocument {
         }
         cx += colW
       }
-
-      this.y = top + rowH
+      return rowH
     }
 
-    drawRow(headers, 'head', 0)
+    const drawHeader = (): void => {
+      hRule(this.y, 'thick')
+      this.y += 1
+      this.y += drawTextRow(headers, 'bold', PDF.colors.muted)
+      hRule(this.y, 'thin')
+      this.y += 0.6
+    }
+
+    // Mantén cabecera + al menos una fila juntas al inicio.
+    this.ensureSpace(14)
+    drawHeader()
+
     rows.forEach((row, i) => {
-      if (this.y + 8 > this.bottomLimit) {
+      const cells = headers.map((_, ci) => row[ci] ?? '')
+      const rowH = rowHeight(measureRow(cells))
+      if (this.y + rowH + 1 > this.bottomLimit) {
         this.pdf.addPage()
         this.y = this.contentTop
         this.paintHeader()
-        drawRow(headers, 'head', 0)
+        drawHeader()
       }
-      const cells = headers.map((_, ci) => row[ci] ?? '')
-      drawRow(cells, 'body', i)
+      this.y += drawTextRow(cells, 'normal', PDF.colors.text)
+      if (i < rows.length - 1) hRule(this.y, 'hair')
     })
 
+    hRule(this.y, 'thick')
     this.y += PDF.gap.sm
   }
 }
