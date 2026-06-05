@@ -32,11 +32,20 @@ export function GroupedDataExercise({ exercise }: Props) {
           subjectLabelPlural: exercise.subjectLabelPlural,
           variableLabel: exercise.variableLabel,
           unit: exercise.unit,
+          intervalNotation: exercise.intervalNotation,
         },
       ),
     [exercise],
   )
   const subjectLabelPlural = exercise.subjectLabelPlural ?? 'familias'
+  const isHalfOpen = exercise.intervalNotation === 'half-open'
+  const intervalFormula = isHalfOpen
+    ? '="["&C2&", "&D2&")"'
+    : '=C2&"-"&D2'
+  const upperLimitFormula = isHalfOpen ? '=C2+$B$7' : '=C2+$B$7-1'
+  const frequencyFormula = isHalfOpen
+    ? `=CONTAR.SI.CONJUNTO($A$2:$A$${exercise.n + 1};">="&C2;$A$2:$A$${exercise.n + 1};"<"&D2)`
+    : `=CONTAR.SI.CONJUNTO($A$2:$A$${exercise.n + 1};">="&C2;$A$2:$A$${exercise.n + 1};"<="&D2)`
   const rawValueRows =
     exercise.rawValues?.reduce<number[][]>((rows, value, index) => {
       const rowIndex = Math.floor(index / 5)
@@ -145,6 +154,7 @@ export function GroupedDataExercise({ exercise }: Props) {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="text-right">Clase</TableHead>
                   <TableHead>Intervalo</TableHead>
                   <TableHead className="text-right">
                     <abbr title="Marca de clase">xᵢ</abbr>
@@ -161,6 +171,9 @@ export function GroupedDataExercise({ exercise }: Props) {
               <TableBody>
                 {analysis.rows.map((row) => (
                   <TableRow key={row.label}>
+                    <TableCell className="text-right tabular-nums">
+                      {row.classIndex}
+                    </TableCell>
                     <TableCell>{row.label}</TableCell>
                     <TableCell className="text-right tabular-nums">
                       {row.xi}
@@ -230,12 +243,57 @@ export function GroupedDataExercise({ exercise }: Props) {
           className="mt-3"
           value={
             <>
-              x̄ ≈ {Math.round(analysis.mean)} {exercise.unit}/mes
+              x̄ ≈ {analysis.meanText} {exercise.unit}
             </>
           }
-          description="Ingreso medio mensual estimado a partir de marcas de clase."
+          description="Media estimada a partir de las marcas de clase."
         />
       </section>
+
+      {exercise.rawValues ? (
+        <section aria-labelledby="grouped-excel-heading">
+          <h3 id="grouped-excel-heading" className="mb-3 text-lg font-semibold">
+            Fórmulas de Excel
+          </h3>
+          <Figure
+            label="Tabla 3"
+            caption={`Supón que los datos están en A2:A${exercise.n + 1}; los límites inferiores en C2:C${analysis.k + 1}, los superiores en D2:D${analysis.k + 1}, las marcas en F y las frecuencias en G.`}
+            captionOnTop
+          >
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Valor</TableHead>
+                  <TableHead>Fórmula</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {[
+                  ['n', `=CONTAR($A$2:$A$${exercise.n + 1})`],
+                  ['Mínimo', `=MIN($A$2:$A$${exercise.n + 1})`],
+                  ['Máximo', `=MAX($A$2:$A$${exercise.n + 1})`],
+                  ['Rango', '=B4-B3'],
+                  ['Número de clases (K)', '=REDONDEAR.MAS(1+3,322*LOG10(B2);0)'],
+                  ['Amplitud (C)', '=REDONDEAR.MAS(B5/B6;0)'],
+                  ['Límite inferior de la 1.ª clase', '=B3'],
+                  ['Límite superior de la clase', upperLimitFormula],
+                  [isHalfOpen ? 'Intervalo [)' : 'Intervalo', intervalFormula],
+                  ['Marca de clase (xᵢ)', '=(C2+D2)/2'],
+                  ['Frecuencia (fᵢ)', frequencyFormula],
+                  ['Frecuencia acumulada (Fᵢ)', '=SUMA($G$2:G2)'],
+                  ['xᵢ · fᵢ', '=F2*G2'],
+                  ['Media agrupada', `=SUMA(I2:I${analysis.k + 1})/B2`],
+                ].map(([label, formula]) => (
+                  <TableRow key={label}>
+                    <TableCell>{label}</TableCell>
+                    <TableCell className="font-mono text-xs">{formula}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Figure>
+        </section>
+      ) : null}
 
       <section aria-labelledby="grouped-chart-heading">
         <h3 id="grouped-chart-heading" className="mb-3 text-lg font-semibold">

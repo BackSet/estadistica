@@ -7,6 +7,7 @@ export type GroupedIntervalInput = {
 }
 
 export type GroupedIntervalRow = GroupedIntervalInput & {
+  classIndex: number
   fr: number
   fac: number
   xifi: number
@@ -24,6 +25,7 @@ export type GroupedAnalysis = {
   rows: GroupedIntervalRow[]
   sumXifi: number
   mean: number
+  meanText: string
   setupSteps: ResolutionStep[]
   tableNote: string
   meanSteps: ResolutionStep[]
@@ -34,9 +36,17 @@ export type GroupedAnalysisOptions = {
   subjectLabelPlural?: string
   variableLabel?: string
   unit?: string
+  intervalNotation?: 'closed-integer' | 'half-open'
 }
 
 const STURGES_FACTOR = 3.322
+
+function formatDecimal(value: number, maximumFractionDigits = 2): string {
+  return value.toLocaleString('es', {
+    minimumFractionDigits: Number.isInteger(value) ? 0 : 1,
+    maximumFractionDigits,
+  })
+}
 
 export function sturgesK(n: number): { kRaw: number; k: number; log10n: number } {
   const log10n = Math.log10(n)
@@ -55,17 +65,19 @@ export function buildGroupedAnalysis(
   const subjectLabelPlural = options.subjectLabelPlural ?? 'familias'
   const variableLabel = options.variableLabel ?? 'ingreso mensual'
   const unit = options.unit ?? 'USD'
+  const intervalNotation = options.intervalNotation ?? 'closed-integer'
   const range = max - min
   const { kRaw, k, log10n } = sturgesK(n)
   const amplitudeRaw = range / k
   const amplitude = Math.ceil(amplitudeRaw)
 
   let cum = 0
-  const rows: GroupedIntervalRow[] = intervals.map((row) => {
+  const rows: GroupedIntervalRow[] = intervals.map((row, index) => {
     cum += row.fi
     const fr = Math.round((row.fi / n) * 1000) / 1000
     return {
       ...row,
+      classIndex: index + 1,
       fr,
       fac: cum,
       xifi: row.xi * row.fi,
@@ -74,6 +86,7 @@ export function buildGroupedAnalysis(
 
   const sumXifi = rows.reduce((s, r) => s + r.xifi, 0)
   const mean = sumXifi / n
+  const meanText = formatDecimal(mean)
   const kRawStr = (Math.round(kRaw * 100) / 100).toFixed(2)
   const logStr = (Math.round(log10n * 1000) / 1000).toFixed(3)
   const amplitudeRawStr = (Math.round(amplitudeRaw * 100) / 100).toFixed(2)
@@ -125,7 +138,7 @@ export function buildGroupedAnalysis(
         {
           term: 'K',
           value: String(k),
-          origin: `${kRawStr} se redondea al entero superior para obtener ${k} clases.`,
+          origin: `${kRawStr} se redondea al entero inmediato superior para obtener ${k} clases. Se hace hacia arriba porque no puede existir una fracción de clase; si se redondeara hacia abajo, la tabla tendría menos intervalos de los sugeridos y podría perder detalle en la distribución.`,
         },
       ],
     },
@@ -147,7 +160,7 @@ export function buildGroupedAnalysis(
         {
           term: 'C',
           value: String(amplitude),
-          origin: `Ancho de cada intervalo; ${amplitudeRawStr} se redondea hacia arriba para trabajar con intervalos enteros.`,
+          origin: `Ancho de cada intervalo; ${amplitudeRawStr} se redondea al entero inmediato superior para trabajar con límites enteros. Se hace hacia arriba para que la suma de las amplitudes cubra todo el rango; si se redondeara hacia abajo, el último intervalo podría no alcanzar el valor máximo.`,
         },
       ],
     },
@@ -157,9 +170,15 @@ export function buildGroupedAnalysis(
       formula: `Desde Mín = ${min}, cada clase abarca C = ${amplitude} →\n${intervals.map((i) => i.label).join(', ')}`,
       legends: [
         {
-          term: 'Límite superior',
-          value: `${min + amplitude - 1}`,
-          origin: `Convención: 1.ª clase ${intervals[0]?.label ?? ''} (Mín + C − 1 evita solapamiento).`,
+          term: intervalNotation === 'half-open' ? 'Intervalo [)' : 'Límite superior',
+          value:
+            intervalNotation === 'half-open'
+              ? 'incluye izquierda, excluye derecha'
+              : `${min + amplitude - 1}`,
+          origin:
+            intervalNotation === 'half-open'
+              ? `Convención: una clase como ${intervals[0]?.label ?? ''} cuenta valores >= al límite inferior y < al límite superior.`
+              : `Convención: 1.ª clase ${intervals[0]?.label ?? ''} (Mín + C − 1 evita solapamiento).`,
         },
         {
           term: 'xᵢ',
@@ -167,7 +186,10 @@ export function buildGroupedAnalysis(
           origin: 'Marca de clase = (límite inferior + límite superior) / 2 de cada intervalo.',
         },
       ],
-      note: `Se forman ${k} intervalos consecutivos hasta cubrir desde ${min} hasta ${max}.`,
+      note:
+        intervalNotation === 'half-open'
+          ? `Se forman ${k} intervalos consecutivos. El último intervalo puede terminar por encima del máximo (${max}); aquí eso es correcto porque debe cubrir el valor máximo sin cerrar el intervalo por la derecha.`
+          : `Se forman ${k} intervalos consecutivos hasta cubrir desde ${min} hasta ${max}.`,
     },
   ]
 
@@ -175,7 +197,7 @@ export function buildGroupedAnalysis(
     {
       step: 5,
       title: 'Media con datos agrupados',
-      formula: `x̄ = Σ(xᵢ · fᵢ) / n = ${sumXifi.toLocaleString('es')} / ${n} = ${Math.round(mean)}`,
+      formula: `x̄ = Σ(xᵢ · fᵢ) / n = ${sumXifi.toLocaleString('es')} / ${n} = ${meanText}`,
       legends: [
         {
           term: 'xᵢ',
@@ -213,6 +235,7 @@ export function buildGroupedAnalysis(
     rows,
     sumXifi,
     mean,
+    meanText,
     setupSteps,
     tableNote:
       `Las frecuencias fᵢ provienen del conteo de ${subjectLabelPlural} en cada intervalo. Fᵢ acumula fᵢ desde la primera fila.`,

@@ -28,6 +28,8 @@ export type GroupedIntervalDef = {
   fi: number
 }
 
+export type GroupedIntervalNotation = 'closed-integer' | 'half-open'
+
 export type GroupedExerciseDef = {
   kind: 'grouped'
   id: string
@@ -43,6 +45,7 @@ export type GroupedExerciseDef = {
   max: number
   n: number
   unit: string
+  intervalNotation?: GroupedIntervalNotation
   intervals: GroupedIntervalDef[]
   chartTitle: string
 }
@@ -172,6 +175,36 @@ export const exercises: ExerciseDef[] = [
       { label: '35-39', xi: 37, fi: 3 },
     ],
     chartTitle: 'Distribución de puntajes por marca de clase (fᵢ)',
+  },
+  {
+    kind: 'grouped',
+    id: 'grouped-ages-half-open',
+    exerciseLabel: '5',
+    title: 'Datos agrupados — Edades registradas con intervalos [)',
+    context:
+      'Se registraron 20 edades. El ejercicio construye la tabla de clases usando intervalos semiabiertos [a, b), es decir, incluye el límite inferior y excluye el superior.',
+    dataSummary: '20 edades entre 18 y 41 años',
+    rawValues: [
+      18, 22, 25, 30, 28, 40, 35, 27, 32, 24, 29, 37, 21, 33, 41, 26, 38,
+      23, 31, 36,
+    ],
+    subjectLabel: 'persona',
+    subjectLabelPlural: 'personas',
+    variableLabel: 'edad',
+    min: 18,
+    max: 41,
+    n: 20,
+    unit: 'años',
+    intervalNotation: 'half-open',
+    intervals: [
+      { label: '[18, 22)', xi: 20, fi: 2 },
+      { label: '[22, 26)', xi: 24, fi: 4 },
+      { label: '[26, 30)', xi: 28, fi: 4 },
+      { label: '[30, 34)', xi: 32, fi: 4 },
+      { label: '[34, 38)', xi: 36, fi: 3 },
+      { label: '[38, 42)', xi: 40, fi: 3 },
+    ],
+    chartTitle: 'Distribución de edades por marca de clase (fᵢ)',
   },
   {
     kind: 'central',
